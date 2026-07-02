@@ -2,51 +2,59 @@ from pathlib import Path
 
 import chromadb
 
+from src.retrieval.document_loader import load_markdown_file
+from src.retrieval.document_loader import read_markdown_files
+from src.retrieval.text_chunker import chunk_text
+
 PROJECT_ROOT = Path(__file__).resolve().parents[2]
 KNOWLEDGE_DIR = PROJECT_ROOT / "knowledge"
 CHROMA_DIR = PROJECT_ROOT / "chromadb_data"
 COLLECTION_NAME = "boomi_knowledge"
 
 
-def read_markdown_files() -> list[Path]:
+def build_document_id(
+    relative_path: Path,
+    index: int,
+) -> str:
     """
-    Finds all markdown files inside the knowledge directory.
-    """
-
-    return sorted(KNOWLEDGE_DIR.rglob("*.md"))
-
-
-def chunk_text(
-    text: str,
-    chunk_size: int = 1200,
-    overlap: int = 150,
-) -> list[str]:
-    """
-    Splits text into simple overlapping chunks.
+    Builds a stable ChromaDB document ID.
     """
 
-    chunks = []
-    start = 0
+    return (
+        str(relative_path)
+        .replace(
+            "/",
+            "_",
+        )
+        .replace(
+            ".md",
+            f"_{index}",
+        )
+    )
 
-    while start < len(text):
-        end = start + chunk_size
-        chunk = text[start:end].strip()
 
-        if chunk:
-            chunks.append(chunk)
+def build_metadata(
+    relative_path: Path,
+) -> dict:
+    """
+    Builds metadata for a knowledge chunk.
+    """
 
-        start = end - overlap
-
-    return chunks
+    return {
+        "source": str(relative_path),
+        "category": (
+            relative_path.parts[1] if len(relative_path.parts) > 1 else "unknown"
+        ),
+    }
 
 
 def ingest_knowledge() -> None:
     """
-    Reads markdown knowledge files and stores them
-    in persistent ChromaDB.
+    Reads markdown knowledge files, chunks them,
+    and stores chunks in persistent ChromaDB.
     """
 
-    markdown_files = read_markdown_files()
+    markdown_files = read_markdown_files(KNOWLEDGE_DIR)
 
     if not markdown_files:
         print("No markdown files found in knowledge directory.")
@@ -61,37 +69,21 @@ def ingest_knowledge() -> None:
     metadatas = []
 
     for file_path in markdown_files:
-        content = file_path.read_text(encoding="utf-8")
+        content = load_markdown_file(file_path)
 
         chunks = chunk_text(content)
 
         relative_path = file_path.relative_to(PROJECT_ROOT)
 
         for index, chunk in enumerate(chunks):
-            doc_id = (
-                str(relative_path)
-                .replace(
-                    "/",
-                    "_",
-                )
-                .replace(
-                    ".md",
-                    f"_{index}",
-                )
-            )
-
             documents.append(chunk)
-            ids.append(doc_id)
-            metadatas.append(
-                {
-                    "source": str(relative_path),
-                    "category": (
-                        relative_path.parts[1]
-                        if len(relative_path.parts) > 1
-                        else "unknown"
-                    ),
-                }
+            ids.append(
+                build_document_id(
+                    relative_path,
+                    index,
+                )
             )
+            metadatas.append(build_metadata(relative_path))
 
     collection.upsert(
         documents=documents,
