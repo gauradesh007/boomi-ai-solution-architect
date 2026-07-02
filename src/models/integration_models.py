@@ -111,3 +111,16 @@ class ArchitectureReport(BaseModel):
     development_and_testing_estimate: str
     implementation_roadmap: str
     final_recommendation: str
+
+
+class KnowledgePacket(BaseModel):
+    """
+    Retrieved knowledge chunk used by the architecture workflow.
+    """
+
+    content: str
+    source: str
+    category: str
+    relevance_score: float | None = None
+    trust_level: str = "medium"
+    freshness: str = "stable"

@@ -4,19 +4,15 @@ def chunk_text(
     overlap: int = 150,
 ) -> list[str]:
     """
-    Splits text into simple overlapping chunks.
+    Returns one clean chunk per knowledge file.
+
+    For the MVP, knowledge files are intentionally small,
+    so keeping each file together improves retrieval quality.
     """
 
-    chunks = []
-    start = 0
+    cleaned_text = text.strip()
 
-    while start < len(text):
-        end = start + chunk_size
-        chunk = text[start:end].strip()
+    if not cleaned_text:
+        return []
 
-        if chunk:
-            chunks.append(chunk)
-
-        start = end - overlap
-
-    return chunks
+    return [cleaned_text]
