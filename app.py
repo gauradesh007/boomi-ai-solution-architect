@@ -1,6 +1,13 @@
 import streamlit as st
 
-from src.models.integration_models import IntegrationRequest
+from src.retrieval.context_builder import build_knowledge_context
+from src.retrieval.knowledge_retriever import KnowledgeRetriever
+from src.retrieval.query_builder import build_retrieval_query
+from src.tools.complexity_estimator import estimate_complexity
+from src.tools.connector_recommender import recommend_connectors
+from src.tools.pattern_selector import select_integration_pattern
+from src.ui.display import display_debug_results
+from src.ui.form import build_request_form
 
 st.set_page_config(
     page_title="Boomi AI Solution Architect",
@@ -10,149 +17,59 @@ st.set_page_config(
 
 
 st.title("Boomi AI Solution Architect")
+
 st.write(
     "Generate Boomi-oriented integration architecture recommendations "
-    "from structured inputs and business requirements."
+    "from structured inputs, deterministic tools, and retrieved knowledge."
+)
+
+st.info(
+    "Sprint 2 mode: validating tools, retrieval, and knowledge context. "
+    "AI report generation is temporarily disabled."
 )
 
 
-with st.form("integration_request_form"):
-    st.subheader("Integration Requirement")
+request = build_request_form()
 
-    col1, col2 = st.columns(2)
 
-    with col1:
-        source_system = st.selectbox(
-            "Source System",
-            [
-                "Local Database",
-                "Salesforce",
-                "SAP",
-                "REST API",
-                "SFTP",
-                "Workday",
-                "Snowflake",
-                "Oracle",
-                "SQL Server",
-                "PostgreSQL",
-                "Custom",
-            ],
+if request:
+    with st.status(
+        "Processing integration architecture inputs...",
+        expanded=True,
+    ) as status:
+        st.write("Selecting integration pattern...")
+        pattern = select_integration_pattern(request)
+
+        st.write("Recommending connectors...")
+        connectors = recommend_connectors(request)
+
+        st.write("Estimating complexity and effort...")
+        estimate = estimate_complexity(request)
+
+        st.write("Building retrieval query...")
+        query = build_retrieval_query(request)
+
+        st.write("Retrieving relevant Boomi knowledge...")
+        retriever = KnowledgeRetriever()
+        knowledge_packets = retriever.retrieve(
+            query,
+            n_results=2,
         )
 
-        integration_style = st.selectbox(
-            "Integration Style",
-            [
-                "API / Real-Time",
-                "Event-Driven",
-                "Batch / Scheduled",
-                "Hybrid",
-            ],
+        st.write("Building knowledge context...")
+        knowledge_context = build_knowledge_context(knowledge_packets)
+
+        status.update(
+            label="Sprint 2 processing complete.",
+            state="complete",
         )
 
-        frequency = st.selectbox(
-            "Frequency",
-            [
-                "Real-Time",
-                "Hourly",
-                "Daily",
-                "Weekly",
-                "Monthly",
-                "On Demand",
-            ],
-        )
-
-        expected_volume = st.text_input(
-            "Expected Volume",
-            value="50,000 records/day",
-        )
-
-    with col2:
-        target_system = st.selectbox(
-            "Target System",
-            [
-                "Salesforce",
-                "SAP",
-                "Local Database",
-                "REST API",
-                "SFTP",
-                "Workday",
-                "Snowflake",
-                "Oracle",
-                "SQL Server",
-                "PostgreSQL",
-                "Custom",
-            ],
-        )
-
-        operation_type = st.selectbox(
-            "Operation Type",
-            [
-                "Create",
-                "Update",
-                "Upsert",
-                "Delete",
-                "Synchronize",
-                "Extract",
-                "Load",
-                "Transform",
-            ],
-        )
-
-        authentication_type = st.selectbox(
-            "Authentication Type",
-            [
-                "OAuth2",
-                "Basic",
-                "API Key",
-                "Mutual TLS",
-                "Certificate",
-                "Not Sure",
-            ],
-        )
-
-        runtime_environment = st.selectbox(
-            "Runtime Environment",
-            [
-                "Atom",
-                "Molecule",
-                "Boomi Atom Cloud",
-                "Not Sure",
-            ],
-        )
-
-    business_requirement = st.text_area(
-        "Business Requirement",
-        value=(
-            "Create or update customer information in Salesforce "
-            "from a local database every night."
-        ),
-        height=140,
+    display_debug_results(
+        request=request,
+        pattern=pattern,
+        connectors=connectors,
+        estimate=estimate,
+        query=query,
+        knowledge_packets=knowledge_packets,
+        knowledge_context=knowledge_context,
     )
-
-    additional_constraints = st.text_area(
-        "Additional Constraints",
-        value="Must complete before business hours.",
-        height=100,
-    )
-
-    submitted = st.form_submit_button("Generate Architecture")
-
-
-if submitted:
-    request = IntegrationRequest(
-        source_system=source_system,
-        target_system=target_system,
-        integration_style=integration_style,
-        operation_type=operation_type,
-        frequency=frequency,
-        expected_volume=expected_volume,
-        authentication_type=authentication_type,
-        runtime_environment=runtime_environment,
-        business_requirement=business_requirement,
-        additional_constraints=additional_constraints,
-    )
-
-    st.success("Integration request captured successfully.")
-
-    st.subheader("Captured Request")
-    st.json(request.model_dump())
