@@ -124,3 +124,26 @@ class KnowledgePacket(BaseModel):
     relevance_score: float | None = None
     trust_level: str = "medium"
     freshness: str = "stable"
+
+
+class ArchitectureResult(BaseModel):
+    """
+    Aggregated result produced by the architecture service.
+
+    This object keeps UI code simple by packaging:
+    - request
+    - deterministic tool outputs
+    - retrieval query
+    - retrieved knowledge
+    - knowledge context
+    - future architecture report
+    """
+
+    request: IntegrationRequest
+    pattern: PatternRecommendation
+    connectors: ConnectorRecommendation
+    estimate: DevelopmentEstimate
+    retrieval_query: str
+    knowledge_packets: list[KnowledgePacket]
+    knowledge_context: str
+    architecture_report: str | None = None
