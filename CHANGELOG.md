@@ -2,28 +2,33 @@
 
 All notable changes to **Boomi AI Solution Architect** are documented here.
 
+The project follows an incremental milestone-based development approach.
+
 ---
 
-# Sprint 1 — Foundation (Completed)
+# Sprint 1 — Foundation ✅
 
 ## Objective
 
-Establish the project foundation and build a working end-to-end MVP without AI.
+Build the foundation of the application by establishing the project structure, domain model, deterministic engineering tools, and the initial Streamlit user interface.
 
-## Completed
+---
 
-### Repository & Architecture
+## Repository
 
 - ✅ Created GitHub repository
-- ✅ Defined project folder structure
-- ✅ Created `.gitignore`
-- ✅ Added architecture diagrams
-- ✅ Completed SRS v1.1
-- ✅ Added project changelog
+- ✅ Designed project folder structure
+- ✅ Added `.gitignore`
+- ✅ Added README
+- ✅ Created CHANGELOG
+- ✅ Added Software Requirements Specification (SRS)
+- ✅ Added Architecture Diagrams
 
-### Domain Model
+---
 
-Implemented core business models:
+## Domain Model
+
+Implemented:
 
 - IntegrationRequest
 - PatternRecommendation
@@ -31,74 +36,251 @@ Implemented core business models:
 - DevelopmentEstimate
 - ArchitectureReport
 
-### User Interface
+---
+
+## User Interface
 
 Implemented the first Streamlit interface capable of:
 
-- Capturing structured integration inputs
+- Capturing structured integration requirements
 - Capturing business requirements
+- Preparing request objects
 
-### Deterministic Tool Layer
+---
 
-Implemented:
+## Tool Layer
+
+Implemented deterministic engineering tools:
 
 - Pattern Selection Tool
 - Connector Recommendation Tool
 - Complexity Estimator
+- Development & Testing Estimator
 
-### Report Generation
+---
+
+## Report Layer
 
 Implemented:
 
 - Markdown Architecture Report Generator
 
-Generated report sections include:
+Generated sections include:
 
 - Executive Summary
 - Requirement Summary
-- Pattern Recommendation
+- Integration Pattern
 - Connector Strategy
 - Mapping Strategy
 - Error Handling
 - Retry Strategy
 - Monitoring
 - Security
-- Development & Testing Estimate
+- Development Estimate
 - Implementation Roadmap
 - Final Recommendation
 
 ---
 
-## Current Status
-
-Sprint 1 is complete.
-
-Current workflow:
+## Sprint 1 Deliverable
 
 ```text
 User Input
         ↓
 IntegrationRequest
         ↓
-Pattern Selection Tool
+Pattern Tool
         ↓
-Connector Recommendation Tool
+Connector Tool
         ↓
-Complexity Estimator
+Complexity Tool
         ↓
-Markdown Report Generator
+Markdown Report
 ```
 
 ---
 
-# Sprint 2 — AI Knowledge Layer (Planned)
+# Sprint 2 — Knowledge Layer & Application Layer ✅
 
-## Goals
+## Objective
+
+Introduce enterprise knowledge retrieval and refactor the application into a layered architecture.
+
+---
+
+## Knowledge Layer
+
+Implemented:
+
+- Curated Markdown Knowledge Base
+
+Knowledge Categories:
+
+- Integration Patterns
+- Connectors
+- Error Handling
+- Monitoring
+- Security
+- Development Estimation
+
+---
+
+## ChromaDB
+
+Implemented:
 
 - Persistent ChromaDB
-- Knowledge Layer
-- Retriever Agent
-- Architecture Agent
-- Architecture Review Agent
+- Knowledge Ingestion Pipeline
+- Document Loader
+- Text Chunker
+
+---
+
+## Retrieval Layer
+
+Implemented:
+
+- Query Builder
+- Knowledge Retriever
+- Context Builder
+- KnowledgePacket model
+
+---
+
+## Application Layer
+
+Major architectural refactoring.
+
+Implemented:
+
+- ArchitectureService
+- ArchitectureResult
+
+The UI now delegates all business logic to the Application Service.
+
+---
+
+## UI Refactoring
+
+Split the UI into reusable modules:
+
+- form.py
+- display.py
+
+App.py now acts as the application entry point instead of containing business logic.
+
+---
+
+## Architecture Improvements
+
+Introduced a layered architecture:
+
+```text
+Streamlit UI
+        ↓
+ArchitectureService
+        ↓
+Tool Layer
+        ↓
+Knowledge Layer
+        ↓
+ArchitectureResult
+        ↓
+Presentation Layer
+```
+
+Separated:
+
+- UI
+- Business Logic
+- Retrieval
+- Tools
+
+---
+
+## Current Status
+
+Current workflow:
+
+```text
+User
+        ↓
+Streamlit Form
+        ↓
+ArchitectureService
+        ↓
+Pattern Tool
+        ↓
+Connector Tool
+        ↓
+Complexity Tool
+        ↓
+Query Builder
+        ↓
+Knowledge Retriever
+        ↓
+Knowledge Context Builder
+        ↓
+ArchitectureResult
+        ↓
+Developer View
+```
+
+---
+
+# Sprint 3 — Architecture Intelligence 🚧
+
+## Objectives
+
+- Introduce ArchitectureRecommendation model
+- Build AI Architecture Agent
+- Generate structured architecture reasoning
+- Keep report generation separate from AI reasoning
+- Introduce Architecture Review Agent
+- Build Revision Loop
+
+Target Architecture:
+
+```text
+ArchitectureService
+        ↓
+Architecture Agent
+        ↓
+ArchitectureRecommendation
+        ↓
+Report Generator
+        ↓
+Markdown Report
+```
+
+---
+
+# Future Roadmap
+
+## Sprint 4
+
 - Human Approval
-- LangGraph Workflow
+- PDF Export
+- DOCX Export
+- Architecture Diagram Generation
+
+## Sprint 5
+
+- Production UI
+- Developer / Production Modes
+- Improved Knowledge Layer
+- Enterprise Connectors
+
+---
+
+# Design Principles
+
+The project follows several core architectural principles:
+
+- UI contains no business logic.
+- Business logic resides in the Application Service.
+- Knowledge Layer is the trusted source.
+- Tool Layer provides deterministic engineering decisions.
+- AI performs reasoning only.
+- Report Generator owns document formatting.
+- Human approval remains the final governance layer.
