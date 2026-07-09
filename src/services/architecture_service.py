@@ -63,5 +63,6 @@ class ArchitectureService:
             retrieval_query=retrieval_query,
             knowledge_packets=knowledge_packets,
             knowledge_context=knowledge_context,
+            architecture_recommendation=None,
             architecture_report=None,
         )
