@@ -1,6 +1,7 @@
 from typing import Literal
 from typing import Optional
 from pydantic import BaseModel
+from src.models.architecture_recommendation import ArchitectureRecommendation
 
 IntegrationStyle = Literal[
     "API / Real-Time",
@@ -129,14 +130,6 @@ class KnowledgePacket(BaseModel):
 class ArchitectureResult(BaseModel):
     """
     Aggregated result produced by the architecture service.
-
-    This object keeps UI code simple by packaging:
-    - request
-    - deterministic tool outputs
-    - retrieval query
-    - retrieved knowledge
-    - knowledge context
-    - future architecture report
     """
 
     request: IntegrationRequest
@@ -146,4 +139,5 @@ class ArchitectureResult(BaseModel):
     retrieval_query: str
     knowledge_packets: list[KnowledgePacket]
     knowledge_context: str
+    architecture_recommendation: ArchitectureRecommendation | None = None
     architecture_report: str | None = None
