@@ -6,6 +6,10 @@ from src.retrieval.query_builder import build_retrieval_query
 from src.tools.complexity_estimator import estimate_complexity
 from src.tools.connector_recommender import recommend_connectors
 from src.tools.pattern_selector import select_integration_pattern
+from src.agents.architecture_agent import generate_architecture_recommendation
+from src.services.architecture_report_generator import (
+    generate_architecture_markdown_report,
+)
 
 
 class ArchitectureService:
@@ -55,7 +59,15 @@ class ArchitectureService:
 
         knowledge_context = build_knowledge_context(knowledge_packets)
 
-        return ArchitectureResult(
+        architecture_recommendation = generate_architecture_recommendation(
+            request=request,
+            pattern=pattern,
+            connectors=connectors,
+            estimate=estimate,
+            knowledge_context=knowledge_context,
+        )
+
+        result = ArchitectureResult(
             request=request,
             pattern=pattern,
             connectors=connectors,
@@ -63,6 +75,11 @@ class ArchitectureService:
             retrieval_query=retrieval_query,
             knowledge_packets=knowledge_packets,
             knowledge_context=knowledge_context,
-            architecture_recommendation=None,
+            architecture_recommendation=architecture_recommendation,
             architecture_report=None,
         )
+
+        architecture_report = generate_architecture_markdown_report(result)
+        result.architecture_report = architecture_report
+
+        return result
