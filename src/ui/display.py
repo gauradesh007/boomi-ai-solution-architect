@@ -42,6 +42,22 @@ def display_architecture_result(
     ):
         st.text(result.knowledge_context)
 
+    if result.architecture_review:
+        st.subheader("Architecture Review")
+
+    st.metric(
+        label="Review Score",
+        value=result.architecture_review.score,
+    )
+
+    st.write(f"Status: {result.architecture_review.status}")
+    st.write(f"Revision Count: {result.revision_count}")
+
+    if result.architecture_review.feedback:
+        st.write("Feedback:")
+        for item in result.architecture_review.feedback:
+            st.warning(item)
+
     if result.architecture_report:
         st.subheader("Architecture Report")
         st.markdown(result.architecture_report)

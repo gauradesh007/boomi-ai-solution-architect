@@ -3,47 +3,31 @@ from src.models.integration_models import IntegrationRequest
 from src.retrieval.context_builder import build_knowledge_context
 from src.retrieval.knowledge_retriever import KnowledgeRetriever
 from src.retrieval.query_builder import build_retrieval_query
-from src.tools.complexity_estimator import estimate_complexity
-from src.tools.connector_recommender import recommend_connectors
-from src.tools.pattern_selector import select_integration_pattern
-from src.agents.architecture_agent import generate_architecture_recommendation
 from src.services.architecture_report_generator import (
     generate_architecture_markdown_report,
 )
+from src.tools.complexity_estimator import estimate_complexity
+from src.tools.connector_recommender import recommend_connectors
+from src.tools.pattern_selector import select_integration_pattern
+from src.workflow.architecture_workflow import ArchitectureWorkflow
 
 
 class ArchitectureService:
-    """
-    Application service that orchestrates the current
-    architecture recommendation workflow.
-
-    The UI should call this service instead of calling
-    tools and retrievers directly.
-    """
-
     def __init__(
         self,
         retriever: KnowledgeRetriever | None = None,
+        workflow: ArchitectureWorkflow | None = None,
     ):
         self.retriever = retriever or KnowledgeRetriever()
+        self.workflow = workflow or ArchitectureWorkflow(
+            max_revisions=2,
+        )
 
     def generate(
         self,
         request: IntegrationRequest,
         n_results: int = 2,
     ) -> ArchitectureResult:
-        """
-        Generates the current Sprint 2 architecture result.
-
-        This currently includes:
-        - deterministic tool outputs
-        - retrieval query
-        - retrieved knowledge packets
-        - knowledge context
-
-        AI report generation will be added later.
-        """
-
         pattern = select_integration_pattern(request)
 
         connectors = recommend_connectors(request)
@@ -59,7 +43,7 @@ class ArchitectureService:
 
         knowledge_context = build_knowledge_context(knowledge_packets)
 
-        architecture_recommendation = generate_architecture_recommendation(
+        recommendation, review, revision_count = self.workflow.run(
             request=request,
             pattern=pattern,
             connectors=connectors,
@@ -75,11 +59,12 @@ class ArchitectureService:
             retrieval_query=retrieval_query,
             knowledge_packets=knowledge_packets,
             knowledge_context=knowledge_context,
-            architecture_recommendation=architecture_recommendation,
+            architecture_recommendation=recommendation,
+            architecture_review=review,
+            revision_count=revision_count,
             architecture_report=None,
         )
 
-        architecture_report = generate_architecture_markdown_report(result)
-        result.architecture_report = architecture_report
+        result.architecture_report = generate_architecture_markdown_report(result)
 
         return result
