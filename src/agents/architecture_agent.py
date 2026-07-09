@@ -7,6 +7,7 @@ from src.models.integration_models import ConnectorRecommendation
 from src.models.integration_models import DevelopmentEstimate
 from src.models.integration_models import IntegrationRequest
 from src.models.integration_models import PatternRecommendation
+from src.models.revision_request import RevisionRequest
 
 llm = ChatOllama(
     model="llama3.2:1b",
@@ -112,6 +113,7 @@ def generate_architecture_recommendation(
     connectors: ConnectorRecommendation,
     estimate: DevelopmentEstimate,
     knowledge_context: str,
+    revision_request: RevisionRequest | None = None,
 ) -> ArchitectureRecommendation:
     """
     Generates structured architecture reasoning.
@@ -175,7 +177,28 @@ Required JSON schema:
   "final_recommendation": "string"
 }}
 """
+    if revision_request:
+        prompt += f"""
 
+Revision Instructions:
+
+The previous recommendation did not pass review.
+
+Review Score:
+{revision_request.score}
+
+Reviewer Feedback:
+{revision_request.feedback}
+
+Previous Recommendation:
+{revision_request.previous_recommendation}
+
+Revise the architecture recommendation using the reviewer feedback.
+Fix only the issues mentioned by the reviewer.
+Keep the output as valid JSON only.
+Do not include markdown.
+Do not include explanation outside JSON.
+"""
     response = llm.invoke(prompt)
 
     try:
