@@ -13,15 +13,23 @@ st.set_page_config(
 
 st.title("Boomi AI Solution Architect")
 
+mode = st.sidebar.radio(
+    "View Mode",
+    [
+        "Production",
+        "Developer",
+    ],
+)
+
 st.write(
     "Generate Boomi-oriented integration architecture recommendations "
-    "from structured inputs, deterministic tools, and retrieved knowledge."
+    "from structured inputs, deterministic tools, retrieved knowledge, "
+    "and AI architecture reasoning."
 )
 
 st.info(
-    "Sprint 2 mode: validating the application service, tools, "
-    "retrieval, and knowledge context. AI report generation is "
-    "temporarily disabled."
+    "Sprint 3 mode: architecture intelligence, review, revision, "
+    "and report generation are enabled."
 )
 
 
@@ -43,8 +51,11 @@ if request:
         )
 
         status.update(
-            label="Sprint 2 processing complete.",
+            label="Architecture processing complete.",
             state="complete",
         )
 
-    display_architecture_result(result)
+    display_architecture_result(
+        result,
+        mode=mode,
+    )
