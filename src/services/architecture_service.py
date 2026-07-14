@@ -13,6 +13,7 @@ from src.workflow.architecture_workflow import ArchitectureWorkflow
 from src.retrieval.context_optimizer import ContextOptimizer
 from src.retrieval.knowledge_deduplicator import KnowledgeDeduplicator
 from src.retrieval.knowledge_ranker import KnowledgeRanker
+from src.models.workflow_status import WorkflowStatus
 
 
 class ArchitectureService:
@@ -34,18 +35,19 @@ class ArchitectureService:
         request: IntegrationRequest,
         n_results: int = 2,
     ) -> ArchitectureResult:
+
+        workflow_status = WorkflowStatus()
+        workflow_status.move_to("PROCESSING")
+
         pattern = select_integration_pattern(request)
 
         connectors = recommend_connectors(request)
 
         estimate = estimate_complexity(request)
 
-        retrieval_query = build_retrieval_query(request)
+        workflow_status.move_to("RETRIEVING_KNOWLEDGE")
 
-        knowledge_packets = self.retriever.retrieve(
-            retrieval_query,
-            n_results=n_results,
-        )
+        retrieval_query = build_retrieval_query(request)
 
         retrieved_packets = self.retriever.retrieve(
             retrieval_query,
@@ -65,6 +67,7 @@ class ArchitectureService:
         )
 
         knowledge_context = build_knowledge_context(optimized_packets)
+        workflow_status.move_to("GENERATING_RECOMMENDATION")
 
         recommendation, review, revision_count = self.workflow.run(
             request=request,
@@ -73,7 +76,7 @@ class ArchitectureService:
             estimate=estimate,
             knowledge_context=knowledge_context,
         )
-
+        workflow_status.move_to("WAITING_FOR_HUMAN_APPROVAL")
         result = ArchitectureResult(
             request=request,
             pattern=pattern,
@@ -86,6 +89,7 @@ class ArchitectureService:
             architecture_review=review,
             revision_count=revision_count,
             architecture_report=None,
+            workflow_status=workflow_status,
         )
 
         result.architecture_report = generate_architecture_markdown_report(result)

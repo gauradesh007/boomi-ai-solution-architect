@@ -13,9 +13,27 @@ def display_architecture_result(
         display_developer_result(result)
 
 
+def display_workflow_status(
+    result: ArchitectureResult,
+) -> None:
+    if not result.workflow_status:
+        return
+
+    st.subheader("Workflow Status")
+
+    st.info(f"Current Status: {result.workflow_status.current_status}")
+
+    with st.expander("Workflow History"):
+        for item in result.workflow_status.status_history:
+            st.write(f"✅ {item}")
+
+
 def display_production_result(
     result: ArchitectureResult,
 ) -> None:
+
+    display_workflow_status(result)
+
     st.success("Architecture recommendation successfully generated and reviewed.")
 
     st.subheader("Architecture Summary")
@@ -83,6 +101,8 @@ def display_production_result(
 def display_developer_result(
     result: ArchitectureResult,
 ) -> None:
+    display_workflow_status(result)
+
     st.success("Developer view generated successfully.")
 
     st.subheader("Architecture Summary")
@@ -185,3 +205,12 @@ def display_human_approval(
             st.warning("Changes requested by human reviewer.")
         else:
             st.error("Architecture rejected by human reviewer.")
+
+    if "human_approval" in st.session_state:
+        saved = st.session_state["human_approval"]
+
+        st.info(f"Saved Decision: {saved['decision']}")
+
+        if saved["comments"]:
+            st.write("Comments:")
+            st.write(saved["comments"])
