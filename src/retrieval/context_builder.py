@@ -1,24 +1,26 @@
-from src.models.integration_models import KnowledgePacket
+from src.models.ranked_knowledge_packet import RankedKnowledgePacket
 
 
 def build_knowledge_context(
-    knowledge_packets: list[KnowledgePacket],
+    ranked_packets: list[RankedKnowledgePacket],
 ) -> str:
     """
-    Converts retrieved knowledge packets into a clean context block.
+    Converts optimized ranked knowledge packets into a clean context block.
 
-    This context will later be passed to the Architecture Agent.
+    This context is passed to the Architecture Agent.
     """
 
-    if not knowledge_packets:
+    if not ranked_packets:
         return "No relevant knowledge was retrieved."
 
     context_sections = []
 
-    for index, packet in enumerate(
-        knowledge_packets,
+    for index, ranked_packet in enumerate(
+        ranked_packets,
         start=1,
     ):
+        packet = ranked_packet.packet
+
         section = f"""
 Knowledge Source {index}
 
@@ -27,6 +29,12 @@ Source:
 
 Category:
 {packet.category}
+
+Rank Score:
+{ranked_packet.score}
+
+Rank Reason:
+{ranked_packet.reason}
 
 Content:
 {packet.content}
