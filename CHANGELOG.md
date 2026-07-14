@@ -2,7 +2,7 @@
 
 All notable changes to **Boomi AI Solution Architect** are documented here.
 
-The project follows an incremental milestone-based development approach.
+The project follows an incremental sprint-based development approach and is evolving into an enterprise AI architecture platform.
 
 ---
 
@@ -10,7 +10,7 @@ The project follows an incremental milestone-based development approach.
 
 ## Objective
 
-Build the foundation of the application by establishing the project structure, domain model, deterministic engineering tools, and the initial Streamlit user interface.
+Establish the project foundation by building the domain model, deterministic engineering tools, and the first Streamlit application.
 
 ---
 
@@ -20,7 +20,7 @@ Build the foundation of the application by establishing the project structure, d
 - ✅ Designed project folder structure
 - ✅ Added `.gitignore`
 - ✅ Added README
-- ✅ Created CHANGELOG
+- ✅ Added CHANGELOG
 - ✅ Added Software Requirements Specification (SRS)
 - ✅ Added Architecture Diagrams
 
@@ -40,11 +40,10 @@ Implemented:
 
 ## User Interface
 
-Implemented the first Streamlit interface capable of:
+Implemented the first Streamlit application capable of:
 
 - Capturing structured integration requirements
 - Capturing business requirements
-- Preparing request objects
 
 ---
 
@@ -61,24 +60,7 @@ Implemented deterministic engineering tools:
 
 ## Report Layer
 
-Implemented:
-
-- Markdown Architecture Report Generator
-
-Generated sections include:
-
-- Executive Summary
-- Requirement Summary
-- Integration Pattern
-- Connector Strategy
-- Mapping Strategy
-- Error Handling
-- Retry Strategy
-- Monitoring
-- Security
-- Development Estimate
-- Implementation Roadmap
-- Final Recommendation
+Implemented Markdown report generation.
 
 ---
 
@@ -86,8 +68,6 @@ Generated sections include:
 
 ```text
 User Input
-        ↓
-IntegrationRequest
         ↓
 Pattern Tool
         ↓
@@ -125,25 +105,16 @@ Knowledge Categories:
 
 ---
 
-## ChromaDB
-
-Implemented:
-
-- Persistent ChromaDB
-- Knowledge Ingestion Pipeline
-- Document Loader
-- Text Chunker
-
----
-
 ## Retrieval Layer
 
 Implemented:
 
+- Persistent ChromaDB
+- Knowledge Ingestion
 - Query Builder
 - Knowledge Retriever
-- Context Builder
-- KnowledgePacket model
+- Knowledge Context Builder
+- KnowledgePacket
 
 ---
 
@@ -156,56 +127,195 @@ Implemented:
 - ArchitectureService
 - ArchitectureResult
 
-The UI now delegates all business logic to the Application Service.
+The UI now delegates business logic to the Application Service.
 
 ---
 
 ## UI Refactoring
 
-Split the UI into reusable modules:
+Refactored into reusable modules:
 
 - form.py
 - display.py
 
-App.py now acts as the application entry point instead of containing business logic.
+App.py is now the application entry point.
 
 ---
 
-## Architecture Improvements
-
-Introduced a layered architecture:
+## Sprint 2 Deliverable
 
 ```text
-Streamlit UI
+User Input
         ↓
 ArchitectureService
-        ↓
-Tool Layer
         ↓
 Knowledge Layer
         ↓
 ArchitectureResult
         ↓
-Presentation Layer
+Developer UI
 ```
-
-Separated:
-
-- UI
-- Business Logic
-- Retrieval
-- Tools
 
 ---
 
-## Current Status
+# Sprint 3 — Architecture Intelligence ✅
 
-Current workflow:
+## Objective
+
+Introduce AI reasoning while keeping deterministic engineering decisions separate from presentation.
+
+---
+
+## AI Layer
+
+Implemented:
+
+- ArchitectureRecommendation model
+- AI Architecture Agent
+- Structured AI reasoning
+- Markdown Report Generator
+
+The AI now generates structured recommendations instead of Markdown.
+
+---
+
+## Review Layer
+
+Implemented:
+
+- Architecture Review Agent
+- ReviewResult
+- Improvement Agent
+- RevisionRequest
+- Architecture Workflow
+
+Introduced:
+
+- Review Score
+- Revision Loop
+- Maximum Revision Count
+
+---
+
+## UI Improvements
+
+Implemented:
+
+- Production Mode
+- Developer Mode
+
+Developer Mode exposes:
+
+- JSON models
+- Retrieval query
+- Knowledge packets
+- Review information
+
+Production Mode presents:
+
+- Architecture report
+- Review score
+- Revision count
+- Markdown download
+
+---
+
+## Sprint 3 Deliverable
 
 ```text
-User
+Architecture Agent
         ↓
-Streamlit Form
+Review Agent
+        ↓
+Improvement Agent
+        ↓
+Architecture Recommendation
+        ↓
+Markdown Report
+```
+
+---
+
+# Sprint 4 — Enterprise Knowledge Pipeline ✅
+
+## Objective
+
+Transform the retrieval system into a production-ready enterprise knowledge pipeline.
+
+---
+
+## Knowledge Routing
+
+Implemented:
+
+- KnowledgeSearchPlan
+- KnowledgeRouter
+
+The retriever no longer searches all knowledge blindly.
+
+---
+
+## Retrieval Optimization
+
+Implemented:
+
+- Knowledge Deduplicator
+- Knowledge Ranker
+- RankedKnowledgePacket
+- Context Optimizer
+
+Knowledge is now:
+
+- Routed
+- Deduplicated
+- Ranked
+- Optimized
+
+before reaching the AI layer.
+
+---
+
+## Enterprise Retrieval Pipeline
+
+```text
+Integration Request
+        ↓
+Knowledge Router
+        ↓
+Knowledge Retriever
+        ↓
+Knowledge Deduplicator
+        ↓
+Knowledge Ranker
+        ↓
+Context Optimizer
+        ↓
+Knowledge Context Builder
+        ↓
+Architecture Agent
+```
+
+---
+
+## Architecture Improvements
+
+The project now consists of six major layers:
+
+- Presentation Layer
+- Application Layer
+- Tool Layer
+- Knowledge Layer
+- AI Layer
+- Report Layer
+
+---
+
+# Current Status
+
+Current application workflow:
+
+```text
+Streamlit UI
         ↓
 ArchitectureService
         ↓
@@ -215,72 +325,75 @@ Connector Tool
         ↓
 Complexity Tool
         ↓
-Query Builder
+Knowledge Router
         ↓
 Knowledge Retriever
         ↓
+Knowledge Deduplicator
+        ↓
+Knowledge Ranker
+        ↓
+Context Optimizer
+        ↓
 Knowledge Context Builder
-        ↓
-ArchitectureResult
-        ↓
-Developer View
-```
-
----
-
-# Sprint 3 — Architecture Intelligence 🚧
-
-## Objectives
-
-- Introduce ArchitectureRecommendation model
-- Build AI Architecture Agent
-- Generate structured architecture reasoning
-- Keep report generation separate from AI reasoning
-- Introduce Architecture Review Agent
-- Build Revision Loop
-
-Target Architecture:
-
-```text
-ArchitectureService
         ↓
 Architecture Agent
         ↓
-ArchitectureRecommendation
+Review Agent
         ↓
-Report Generator
+Improvement Agent
         ↓
-Markdown Report
+Architecture Report
 ```
 
 ---
 
-# Future Roadmap
+# Sprint 5 — Enterprise Workflow (Planned)
 
-## Sprint 4
+## Planned Features
 
 - Human Approval
-- PDF Export
-- DOCX Export
-- Architecture Diagram Generation
-
-## Sprint 5
-
-- Production UI
-- Developer / Production Modes
-- Improved Knowledge Layer
-- Enterprise Connectors
+- Workflow State Management
+- Architecture History
+- Versioning
+- Conversation Memory
 
 ---
 
-# Design Principles
+# Sprint 6 — Enterprise Export (Planned)
 
-The project follows several core architectural principles:
+## Planned Features
+
+- PDF Export
+- Word Export
+- Architecture Diagram Export
+- Mermaid Diagrams
+- Architecture Source Attribution
+
+---
+
+# Long-Term Vision
+
+The platform is designed to support multiple enterprise integration technologies.
+
+Planned future support:
+
+- Boomi
+- MuleSoft
+- Azure Integration Services
+- Informatica
+- SnapLogic
+
+without changing the overall application architecture.
+
+---
+
+# Core Design Principles
 
 - UI contains no business logic.
-- Business logic resides in the Application Service.
-- Knowledge Layer is the trusted source.
+- ApplicationService orchestrates the application.
 - Tool Layer provides deterministic engineering decisions.
+- Knowledge Layer is the trusted source.
 - AI performs reasoning only.
-- Report Generator owns document formatting.
+- Report Generator owns formatting.
 - Human approval remains the final governance layer.

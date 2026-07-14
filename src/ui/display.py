@@ -7,11 +7,7 @@ def display_architecture_result(
     result: ArchitectureResult,
     mode: str = "Production",
 ) -> None:
-    """
-    Displays architecture result based on selected view mode.
-    """
-
-    if mode == "Production":
+    if "Production" in mode:
         display_production_result(result)
     else:
         display_developer_result(result)
@@ -20,39 +16,55 @@ def display_architecture_result(
 def display_production_result(
     result: ArchitectureResult,
 ) -> None:
-    """
-    Displays clean user-facing architecture result.
-    """
+    st.success("Architecture recommendation successfully generated and reviewed.")
 
-    st.success("Architecture report generated successfully.")
+    st.subheader("Architecture Summary")
+
+    col1, col2, col3, col4 = st.columns(4)
+
+    with col1:
+        st.metric("Source", result.request.source_system)
+
+    with col2:
+        st.metric("Target", result.request.target_system)
+
+    with col3:
+        st.metric("Pattern", result.pattern.pattern_name)
+
+    with col4:
+        st.metric("Complexity", result.estimate.complexity)
+
+    st.divider()
 
     if result.architecture_review:
-        st.subheader("Architecture Review")
+        st.subheader("Review Dashboard")
 
         col1, col2, col3 = st.columns(3)
 
         with col1:
             st.metric(
-                label="Review Score",
-                value=result.architecture_review.score,
+                "Review Score",
+                f"{result.architecture_review.score}/100",
             )
 
         with col2:
             st.metric(
-                label="Revision Count",
-                value=result.revision_count,
+                "Status",
+                result.architecture_review.status,
             )
 
         with col3:
             st.metric(
-                label="Status",
-                value=result.architecture_review.status,
+                "Revisions",
+                result.revision_count,
             )
 
         if result.architecture_review.feedback:
             with st.expander("Review Feedback"):
                 for item in result.architecture_review.feedback:
                     st.warning(item)
+
+    st.divider()
 
     if result.architecture_report:
         st.subheader("Architecture Report")
@@ -69,11 +81,25 @@ def display_production_result(
 def display_developer_result(
     result: ArchitectureResult,
 ) -> None:
-    """
-    Displays developer/debug view of the architecture result.
-    """
+    st.success("Developer view generated successfully.")
 
-    st.success("Architecture inputs processed successfully.")
+    st.subheader("Architecture Summary")
+
+    col1, col2, col3, col4 = st.columns(4)
+
+    with col1:
+        st.metric("Source", result.request.source_system)
+
+    with col2:
+        st.metric("Target", result.request.target_system)
+
+    with col3:
+        st.metric("Pattern", result.pattern.pattern_name)
+
+    with col4:
+        st.metric("Complexity", result.estimate.complexity)
+
+    st.divider()
 
     st.subheader("Integration Request")
     st.json(result.request.model_dump())
@@ -99,19 +125,13 @@ def display_developer_result(
         st.json(result.architecture_review.model_dump())
         st.write(f"Revision Count: {result.revision_count}")
 
-    with st.expander(
-        "Retrieved Knowledge Packets",
-        expanded=False,
-    ):
+    with st.expander("Retrieved Knowledge Packets", expanded=False):
         for packet in result.knowledge_packets:
             st.markdown(f"### {packet.source}")
             st.write(f"Category: {packet.category}")
             st.markdown(packet.content)
 
-    with st.expander(
-        "Knowledge Context",
-        expanded=False,
-    ):
+    with st.expander("Knowledge Context", expanded=False):
         st.text(result.knowledge_context)
 
     if result.architecture_report:

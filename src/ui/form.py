@@ -13,6 +13,8 @@ def build_request_form() -> IntegrationRequest | None:
     with st.form("integration_request_form"):
         st.subheader("Integration Requirement")
 
+        st.markdown("### 1. Source and Target Systems")
+
         col1, col2 = st.columns(2)
 
         with col1:
@@ -33,6 +35,29 @@ def build_request_form() -> IntegrationRequest | None:
                 ],
             )
 
+        with col2:
+            target_system = st.selectbox(
+                "Target System",
+                [
+                    "Salesforce",
+                    "SAP",
+                    "Local Database",
+                    "REST API",
+                    "SFTP",
+                    "Workday",
+                    "Snowflake",
+                    "Oracle",
+                    "SQL Server",
+                    "PostgreSQL",
+                    "Custom",
+                ],
+            )
+
+        st.markdown("### 2. Integration Settings")
+
+        col3, col4 = st.columns(2)
+
+        with col3:
             integration_style = st.selectbox(
                 "Integration Style",
                 [
@@ -58,37 +83,10 @@ def build_request_form() -> IntegrationRequest | None:
             expected_volume = st.text_input(
                 "Expected Volume",
                 value="50,000 records/day",
+                help="Example: 10,000 records/day, 500,000 records/month, low volume, high volume",
             )
 
-            mapping_complexity = st.selectbox(
-                "Mapping Complexity",
-                [
-                    "Low",
-                    "Medium",
-                    "High",
-                    "Very High",
-                ],
-                index=1,
-            )
-
-        with col2:
-            target_system = st.selectbox(
-                "Target System",
-                [
-                    "Salesforce",
-                    "SAP",
-                    "Local Database",
-                    "REST API",
-                    "SFTP",
-                    "Workday",
-                    "Snowflake",
-                    "Oracle",
-                    "SQL Server",
-                    "PostgreSQL",
-                    "Custom",
-                ],
-            )
-
+        with col4:
             operation_type = st.selectbox(
                 "Operation Type",
                 [
@@ -125,6 +123,23 @@ def build_request_form() -> IntegrationRequest | None:
                 ],
             )
 
+        st.markdown("### 3. Complexity Inputs")
+
+        col5, col6 = st.columns(2)
+
+        with col5:
+            mapping_complexity = st.selectbox(
+                "Mapping Complexity",
+                [
+                    "Low",
+                    "Medium",
+                    "High",
+                    "Very High",
+                ],
+                index=1,
+            )
+
+        with col6:
             transformation_complexity = st.selectbox(
                 "Transformation Complexity",
                 [
@@ -136,22 +151,29 @@ def build_request_form() -> IntegrationRequest | None:
                 index=1,
             )
 
+        st.markdown("### 4. Business Requirement")
+
         business_requirement = st.text_area(
-            "Business Requirement",
+            "Business Requirement (Plain English)",
             value=(
-                "Create or update customer information in Salesforce "
-                "from a local database every night."
+                "Synchronize customer master data from the on-premise "
+                "database to Salesforce every night using batch processing."
             ),
             height=140,
+            help="Describe what the integration should achieve in business terms.",
         )
 
         additional_constraints = st.text_area(
             "Additional Constraints",
             value="Must complete before business hours.",
             height=100,
+            help="Examples: SLA, timing, compliance, security, or operational constraints.",
         )
 
-        submitted = st.form_submit_button("Generate Architecture")
+        submitted = st.form_submit_button(
+            "Generate Architecture Recommendation",
+            use_container_width=True,
+        )
 
     if not submitted:
         return None

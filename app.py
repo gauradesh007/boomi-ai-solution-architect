@@ -11,25 +11,57 @@ st.set_page_config(
 )
 
 
+with st.sidebar:
+    st.title("🧩 Boomi AI")
+    st.caption("Enterprise Integration Solution Architect")
+
+    mode = st.radio(
+        "Application Mode",
+        [
+            "🏢 Production",
+            "🛠 Developer",
+        ],
+    )
+
+    st.divider()
+
+    st.markdown("### Capabilities")
+    st.markdown("""
+        ✅ Pattern recommendation  
+        ✅ Connector recommendation  
+        ✅ Knowledge retrieval  
+        ✅ AI reasoning  
+        ✅ Architecture review  
+        ✅ Revision workflow  
+        ✅ Markdown report  
+        """)
+
+    st.divider()
+
+    st.markdown("### Roadmap")
+    st.markdown("""
+        🚧 Human approval  
+        🚧 PDF export  
+        🚧 Architecture diagrams  
+        🚧 Source attribution  
+        """)
+
+    st.divider()
+
+    st.success("Prototype Active")
+
+
 st.title("Boomi AI Solution Architect")
 
-mode = st.sidebar.radio(
-    "View Mode",
-    [
-        "Production",
-        "Developer",
-    ],
-)
-
-st.write(
-    "Generate Boomi-oriented integration architecture recommendations "
-    "from structured inputs, deterministic tools, retrieved knowledge, "
-    "and AI architecture reasoning."
-)
+st.markdown("""
+    AI-powered enterprise integration architecture assistant for generating
+    Boomi-oriented solution recommendations from structured requirements,
+    deterministic tools, enterprise knowledge, and AI reasoning.
+    """)
 
 st.info(
-    "Sprint 3 mode: architecture intelligence, review, revision, "
-    "and report generation are enabled."
+    "Enter an integration requirement below and generate an architecture "
+    "recommendation with review score, revision feedback, and a Markdown report."
 )
 
 
@@ -40,18 +72,22 @@ if request:
     service = ArchitectureService()
 
     with st.status(
-        "Processing integration architecture inputs...",
+        "Generating architecture recommendation...",
         expanded=True,
     ) as status:
-        st.write("Running architecture service...")
+        st.write("Analyzing structured requirement...")
+        st.write("Running deterministic architecture tools...")
+        st.write("Retrieving and optimizing knowledge context...")
+        st.write("Generating AI architecture recommendation...")
+        st.write("Reviewing and revising architecture output...")
 
         result = service.generate(
             request=request,
-            n_results=2,
+            n_results=5,
         )
 
         status.update(
-            label="Architecture processing complete.",
+            label="Architecture recommendation generated.",
             state="complete",
         )
 
@@ -59,3 +95,16 @@ if request:
         result,
         mode=mode,
     )
+else:
+    st.markdown("""
+        ### What this assistant produces
+
+        - Recommended integration pattern
+        - Boomi connector strategy
+        - Mapping and validation guidance
+        - Error handling and retry strategy
+        - Monitoring and security recommendations
+        - Development and testing estimate
+        - Architecture review score
+        - Downloadable Markdown report
+        """)
