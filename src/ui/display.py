@@ -76,6 +76,8 @@ def display_production_result(
             file_name="boomi_architecture_report.md",
             mime="text/markdown",
         )
+    st.divider()
+    display_human_approval(result)
 
 
 def display_developer_result(
@@ -144,3 +146,42 @@ def display_developer_result(
             file_name="boomi_architecture_report.md",
             mime="text/markdown",
         )
+    st.divider()
+    display_human_approval(result)
+
+
+def display_human_approval(
+    result: ArchitectureResult,
+) -> None:
+    st.subheader("Human Approval")
+
+    decision = st.radio(
+        "Decision",
+        [
+            "APPROVED",
+            "REQUEST_CHANGES",
+            "REJECTED",
+        ],
+        horizontal=True,
+    )
+
+    comments = st.text_area(
+        "Approval Comments",
+        placeholder="Add comments or requested changes here.",
+    )
+
+    if st.button(
+        "Submit Human Decision",
+        use_container_width=True,
+    ):
+        st.session_state["human_approval"] = {
+            "decision": decision,
+            "comments": comments,
+        }
+
+        if decision == "APPROVED":
+            st.success("Architecture approved by human reviewer.")
+        elif decision == "REQUEST_CHANGES":
+            st.warning("Changes requested by human reviewer.")
+        else:
+            st.error("Architecture rejected by human reviewer.")

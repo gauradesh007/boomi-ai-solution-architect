@@ -3,6 +3,7 @@ from typing import Optional
 from pydantic import BaseModel
 from src.models.architecture_recommendation import ArchitectureRecommendation
 from src.models.review_result import ReviewResult
+from src.models.approval_result import ApprovalResult
 
 IntegrationStyle = Literal[
     "API / Real-Time",
@@ -140,3 +141,4 @@ class ArchitectureResult(BaseModel):
     architecture_review: ReviewResult | None = None
     revision_count: int = 0
     architecture_report: str | None = None
+    human_approval: ApprovalResult | None = None
