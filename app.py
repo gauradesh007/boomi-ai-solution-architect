@@ -49,7 +49,22 @@ with st.sidebar:
     st.divider()
 
     st.success("Prototype Active")
+    reuse_last_request = False
 
+    if "last_request" in st.session_state:
+        st.divider()
+        st.markdown("### Last Request")
+        last_request = st.session_state["last_request"]
+
+        st.write(f"Source: {last_request['source_system']}")
+        st.write(f"Target: {last_request['target_system']}")
+        st.write(f"Style: {last_request['integration_style']}")
+        st.write(f"Operation: {last_request['operation_type']}")
+
+        reuse_last_request = st.checkbox(
+            "Reuse last request",
+            value=False,
+        )
 
 st.title("Boomi AI Solution Architect")
 
@@ -65,10 +80,15 @@ st.info(
 )
 
 
-request = build_request_form()
+default_values = st.session_state.get("last_request") if reuse_last_request else None
 
+request = build_request_form(
+    default_values=default_values,
+)
 
 if request:
+    st.session_state["last_request"] = request.model_dump()
+
     service = ArchitectureService()
 
     with st.status(

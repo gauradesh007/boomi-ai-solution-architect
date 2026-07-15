@@ -3,12 +3,46 @@ import streamlit as st
 from src.models.integration_models import IntegrationRequest
 
 
-def build_request_form() -> IntegrationRequest | None:
+def get_index(
+    options: list[str],
+    value: str | None,
+    default: str,
+) -> int:
+    """
+    Returns safe index for Streamlit selectbox.
+    """
+
+    selected_value = value or default
+
+    if selected_value in options:
+        return options.index(selected_value)
+
+    return options.index(default)
+
+
+def build_request_form(
+    default_values: dict | None = None,
+) -> IntegrationRequest | None:
     """
     Renders the integration request form.
 
     Returns IntegrationRequest when submitted.
     """
+    defaults = default_values or {}
+
+    source_options = [
+        "Local Database",
+        "Salesforce",
+        "SAP",
+        "REST API",
+        "SFTP",
+        "Workday",
+        "Snowflake",
+        "Oracle",
+        "SQL Server",
+        "PostgreSQL",
+        "Custom",
+    ]
 
     with st.form("integration_request_form"):
         st.subheader("Integration Requirement")
@@ -20,19 +54,12 @@ def build_request_form() -> IntegrationRequest | None:
         with col1:
             source_system = st.selectbox(
                 "Source System",
-                [
+                source_options,
+                index=get_index(
+                    source_options,
+                    defaults.get("source_system"),
                     "Local Database",
-                    "Salesforce",
-                    "SAP",
-                    "REST API",
-                    "SFTP",
-                    "Workday",
-                    "Snowflake",
-                    "Oracle",
-                    "SQL Server",
-                    "PostgreSQL",
-                    "Custom",
-                ],
+                ),
             )
 
         with col2:
