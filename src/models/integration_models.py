@@ -5,6 +5,10 @@ from src.models.architecture_recommendation import ArchitectureRecommendation
 from src.models.review_result import ReviewResult
 from src.models.approval_result import ApprovalResult
 from src.models.workflow_status import WorkflowStatus
+from src.models.architecture_version import (
+    ArchitectureVersion,
+)
+from pydantic import BaseModel, Field
 
 IntegrationStyle = Literal[
     "API / Real-Time",
@@ -131,6 +135,10 @@ class KnowledgePacket(BaseModel):
 
 
 class ArchitectureResult(BaseModel):
+    """
+    Aggregated result produced by the application workflow.
+    """
+
     request: IntegrationRequest
     pattern: PatternRecommendation
     connectors: ConnectorRecommendation
@@ -140,7 +148,8 @@ class ArchitectureResult(BaseModel):
     knowledge_context: str
     architecture_recommendation: ArchitectureRecommendation | None = None
     architecture_review: ReviewResult | None = None
-    revision_count: int = 0
-    architecture_report: str | None = None
     human_approval: ApprovalResult | None = None
     workflow_status: WorkflowStatus | None = None
+    revision_count: int = 0
+    versions: list[ArchitectureVersion] = Field(default_factory=list)
+    architecture_report: str | None = None

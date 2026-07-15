@@ -36,6 +36,13 @@ def display_production_result(
 
     st.success("Architecture recommendation successfully generated and reviewed.")
 
+    # Architecture Summary
+    # Review Dashboard
+
+    display_architecture_versions(result)
+
+    # Architecture Report
+
     st.subheader("Architecture Summary")
 
     col1, col2, col3, col4 = st.columns(4)
@@ -102,7 +109,7 @@ def display_developer_result(
     result: ArchitectureResult,
 ) -> None:
     display_workflow_status(result)
-
+    display_architecture_versions(result)
     st.success("Developer view generated successfully.")
 
     st.subheader("Architecture Summary")
@@ -214,3 +221,18 @@ def display_human_approval(
         if saved["comments"]:
             st.write("Comments:")
             st.write(saved["comments"])
+
+
+def display_architecture_versions(result: ArchitectureResult) -> None:
+    if not result.versions:
+        return
+
+    st.subheader("Architecture Versions")
+
+    for version in result.versions:
+        with st.expander(
+            f"Version {version.version} - Score {version.review.score}/100"
+        ):
+            st.write(f"Created At: {version.created_at}")
+            st.write(f"Review Status: {version.review.status}")
+            st.json(version.recommendation.model_dump())

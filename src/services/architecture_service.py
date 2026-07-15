@@ -67,15 +67,17 @@ class ArchitectureService:
         )
 
         knowledge_context = build_knowledge_context(optimized_packets)
+
         workflow_status.move_to("GENERATING_RECOMMENDATION")
 
-        recommendation, review, revision_count = self.workflow.run(
+        recommendation, review, revision_count, versions = self.workflow.run(
             request=request,
             pattern=pattern,
             connectors=connectors,
             estimate=estimate,
             knowledge_context=knowledge_context,
         )
+
         workflow_status.move_to("WAITING_FOR_HUMAN_APPROVAL")
         result = ArchitectureResult(
             request=request,
@@ -90,8 +92,11 @@ class ArchitectureService:
             revision_count=revision_count,
             architecture_report=None,
             workflow_status=workflow_status,
+            versions=versions,
         )
 
         result.architecture_report = generate_architecture_markdown_report(result)
+
+        workflow_status.move_to("COMPLETED")
 
         return result

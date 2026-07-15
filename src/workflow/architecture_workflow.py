@@ -7,6 +7,7 @@ from src.models.integration_models import DevelopmentEstimate
 from src.models.integration_models import IntegrationRequest
 from src.models.integration_models import PatternRecommendation
 from src.models.review_result import ReviewResult
+from src.workflow.version_manager import VersionManager
 
 
 class ArchitectureWorkflow:
@@ -15,6 +16,7 @@ class ArchitectureWorkflow:
         max_revisions: int = 2,
     ):
         self.max_revisions = max_revisions
+        self.version_manager = VersionManager()
 
     def run(
         self,
@@ -23,9 +25,10 @@ class ArchitectureWorkflow:
         connectors: ConnectorRecommendation,
         estimate: DevelopmentEstimate,
         knowledge_context: str,
-    ) -> tuple[ArchitectureRecommendation, ReviewResult, int]:
+    ) -> tuple[ArchitectureRecommendation, ReviewResult, int, list]:
         revision_count = 0
         revision_request = None
+        versions = []
 
         recommendation = generate_architecture_recommendation(
             request=request,
@@ -37,6 +40,14 @@ class ArchitectureWorkflow:
         )
 
         review = review_architecture(recommendation)
+
+        versions.append(
+            self.version_manager.create_version(
+                version_number=1,
+                recommendation=recommendation,
+                review=review,
+            )
+        )
 
         while review.status == "NEEDS_REVISION" and revision_count < self.max_revisions:
             revision_request = build_revision_request(
@@ -57,4 +68,12 @@ class ArchitectureWorkflow:
 
             review = review_architecture(recommendation)
 
-        return recommendation, review, revision_count
+            versions.append(
+                self.version_manager.create_version(
+                    version_number=len(versions) + 1,
+                    recommendation=recommendation,
+                    review=review,
+                )
+            )
+
+        return recommendation, review, revision_count, versions
