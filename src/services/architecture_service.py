@@ -79,6 +79,11 @@ class ArchitectureService:
         )
 
         workflow_status.move_to("WAITING_FOR_HUMAN_APPROVAL")
+
+        knowledge_sources = sorted(
+            {ranked_packet.packet.source for ranked_packet in optimized_packets}
+        )
+
         result = ArchitectureResult(
             request=request,
             pattern=pattern,
@@ -87,6 +92,7 @@ class ArchitectureService:
             retrieval_query=retrieval_query,
             knowledge_packets=deduplicated_packets,
             knowledge_context=knowledge_context,
+            knowledge_sources=knowledge_sources,
             architecture_recommendation=recommendation,
             architecture_review=review,
             revision_count=revision_count,

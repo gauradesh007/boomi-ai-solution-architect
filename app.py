@@ -34,6 +34,7 @@ with st.sidebar:
         ✅ Architecture review  
         ✅ Revision workflow  
         ✅ Markdown report  
+        ✅ Source attribution        
         """)
 
     st.divider()
@@ -43,7 +44,6 @@ with st.sidebar:
         🚧 Human approval  
         🚧 PDF export  
         🚧 Architecture diagrams  
-        🚧 Source attribution  
         """)
 
     st.divider()

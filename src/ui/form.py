@@ -2,22 +2,95 @@ import streamlit as st
 
 from src.models.integration_models import IntegrationRequest
 
+SOURCE_TARGET_OPTIONS = [
+    "Local Database",
+    "Salesforce",
+    "SAP",
+    "REST API",
+    "SFTP",
+    "Workday",
+    "Snowflake",
+    "Oracle",
+    "SQL Server",
+    "PostgreSQL",
+    "Custom",
+]
+
+INTEGRATION_STYLE_OPTIONS = [
+    "API / Real-Time",
+    "Event-Driven",
+    "Batch / Scheduled",
+    "Hybrid",
+]
+
+FREQUENCY_OPTIONS = [
+    "Real-Time",
+    "Hourly",
+    "Daily",
+    "Weekly",
+    "Monthly",
+    "On Demand",
+]
+
+OPERATION_OPTIONS = [
+    "Create",
+    "Update",
+    "Upsert",
+    "Delete",
+    "Synchronize",
+    "Extract",
+    "Load",
+    "Transform",
+]
+
+AUTHENTICATION_OPTIONS = [
+    "OAuth2",
+    "Basic",
+    "API Key",
+    "Mutual TLS",
+    "Certificate",
+    "Not Sure",
+]
+
+RUNTIME_OPTIONS = [
+    "Atom",
+    "Molecule",
+    "Boomi Atom Cloud",
+    "Not Sure",
+]
+
+COMPLEXITY_OPTIONS = [
+    "Low",
+    "Medium",
+    "High",
+    "Very High",
+]
+
 
 def get_index(
     options: list[str],
     value: str | None,
     default: str,
 ) -> int:
-    """
-    Returns safe index for Streamlit selectbox.
-    """
-
     selected_value = value or default
 
     if selected_value in options:
         return options.index(selected_value)
 
     return options.index(default)
+
+
+def get_default(
+    defaults: dict,
+    field_name: str,
+    default_value: str,
+) -> str:
+    value = defaults.get(field_name)
+
+    if value:
+        return str(value)
+
+    return default_value
 
 
 def build_request_form(
@@ -28,21 +101,8 @@ def build_request_form(
 
     Returns IntegrationRequest when submitted.
     """
-    defaults = default_values or {}
 
-    source_options = [
-        "Local Database",
-        "Salesforce",
-        "SAP",
-        "REST API",
-        "SFTP",
-        "Workday",
-        "Snowflake",
-        "Oracle",
-        "SQL Server",
-        "PostgreSQL",
-        "Custom",
-    ]
+    defaults = default_values or {}
 
     with st.form("integration_request_form"):
         st.subheader("Integration Requirement")
@@ -54,9 +114,9 @@ def build_request_form(
         with col1:
             source_system = st.selectbox(
                 "Source System",
-                source_options,
+                SOURCE_TARGET_OPTIONS,
                 index=get_index(
-                    source_options,
+                    SOURCE_TARGET_OPTIONS,
                     defaults.get("source_system"),
                     "Local Database",
                 ),
@@ -65,19 +125,12 @@ def build_request_form(
         with col2:
             target_system = st.selectbox(
                 "Target System",
-                [
+                SOURCE_TARGET_OPTIONS,
+                index=get_index(
+                    SOURCE_TARGET_OPTIONS,
+                    defaults.get("target_system"),
                     "Salesforce",
-                    "SAP",
-                    "Local Database",
-                    "REST API",
-                    "SFTP",
-                    "Workday",
-                    "Snowflake",
-                    "Oracle",
-                    "SQL Server",
-                    "PostgreSQL",
-                    "Custom",
-                ],
+                ),
             )
 
         st.markdown("### 2. Integration Settings")
@@ -87,67 +140,66 @@ def build_request_form(
         with col3:
             integration_style = st.selectbox(
                 "Integration Style",
-                [
-                    "API / Real-Time",
-                    "Event-Driven",
+                INTEGRATION_STYLE_OPTIONS,
+                index=get_index(
+                    INTEGRATION_STYLE_OPTIONS,
+                    defaults.get("integration_style"),
                     "Batch / Scheduled",
-                    "Hybrid",
-                ],
+                ),
             )
 
             frequency = st.selectbox(
                 "Frequency",
-                [
-                    "Real-Time",
-                    "Hourly",
+                FREQUENCY_OPTIONS,
+                index=get_index(
+                    FREQUENCY_OPTIONS,
+                    defaults.get("frequency"),
                     "Daily",
-                    "Weekly",
-                    "Monthly",
-                    "On Demand",
-                ],
+                ),
             )
 
             expected_volume = st.text_input(
                 "Expected Volume",
-                value="50,000 records/day",
-                help="Example: 10,000 records/day, 500,000 records/month, low volume, high volume",
+                value=get_default(
+                    defaults,
+                    "expected_volume",
+                    "50,000 records/day",
+                ),
+                help=(
+                    "Example: 10,000 records/day, "
+                    "500,000 records/month, low volume, high volume"
+                ),
             )
 
         with col4:
             operation_type = st.selectbox(
                 "Operation Type",
-                [
-                    "Create",
-                    "Update",
+                OPERATION_OPTIONS,
+                index=get_index(
+                    OPERATION_OPTIONS,
+                    defaults.get("operation_type"),
                     "Upsert",
-                    "Delete",
-                    "Synchronize",
-                    "Extract",
-                    "Load",
-                    "Transform",
-                ],
+                ),
             )
 
             authentication_type = st.selectbox(
                 "Authentication Type",
-                [
+                AUTHENTICATION_OPTIONS,
+                index=get_index(
+                    AUTHENTICATION_OPTIONS,
+                    defaults.get("authentication_type"),
                     "OAuth2",
-                    "Basic",
-                    "API Key",
-                    "Mutual TLS",
-                    "Certificate",
-                    "Not Sure",
-                ],
+                ),
             )
 
             runtime_environment = st.selectbox(
                 "Runtime Environment",
-                [
+                RUNTIME_OPTIONS,
+                index=get_index(
+                    RUNTIME_OPTIONS,
+                    defaults.get("runtime_environment"),
                     "Atom",
-                    "Molecule",
-                    "Boomi Atom Cloud",
-                    "Not Sure",
-                ],
+                ),
             )
 
         st.markdown("### 3. Complexity Inputs")
@@ -157,34 +209,36 @@ def build_request_form(
         with col5:
             mapping_complexity = st.selectbox(
                 "Mapping Complexity",
-                [
-                    "Low",
+                COMPLEXITY_OPTIONS,
+                index=get_index(
+                    COMPLEXITY_OPTIONS,
+                    defaults.get("mapping_complexity"),
                     "Medium",
-                    "High",
-                    "Very High",
-                ],
-                index=1,
+                ),
             )
 
         with col6:
             transformation_complexity = st.selectbox(
                 "Transformation Complexity",
-                [
-                    "Low",
+                COMPLEXITY_OPTIONS,
+                index=get_index(
+                    COMPLEXITY_OPTIONS,
+                    defaults.get("transformation_complexity"),
                     "Medium",
-                    "High",
-                    "Very High",
-                ],
-                index=1,
+                ),
             )
 
         st.markdown("### 4. Business Requirement")
 
         business_requirement = st.text_area(
             "Business Requirement (Plain English)",
-            value=(
-                "Synchronize customer master data from the on-premise "
-                "database to Salesforce every night using batch processing."
+            value=get_default(
+                defaults,
+                "business_requirement",
+                (
+                    "Synchronize customer master data from the on-premise "
+                    "database to Salesforce every night using batch processing."
+                ),
             ),
             height=140,
             help="Describe what the integration should achieve in business terms.",
@@ -192,9 +246,16 @@ def build_request_form(
 
         additional_constraints = st.text_area(
             "Additional Constraints",
-            value="Must complete before business hours.",
+            value=get_default(
+                defaults,
+                "additional_constraints",
+                "Must complete before business hours.",
+            ),
             height=100,
-            help="Examples: SLA, timing, compliance, security, or operational constraints.",
+            help=(
+                "Examples: SLA, timing, compliance, security, "
+                "or operational constraints."
+            ),
         )
 
         submitted = st.form_submit_button(

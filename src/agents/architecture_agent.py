@@ -9,8 +9,10 @@ from src.models.integration_models import IntegrationRequest
 from src.models.integration_models import PatternRecommendation
 from src.models.revision_request import RevisionRequest
 
+
 llm = ChatOllama(
     model="llama3.2:1b",
+    temperature=0,
 )
 
 
@@ -20,11 +22,6 @@ def normalize_architecture_data(
     connectors: ConnectorRecommendation,
     estimate: DevelopmentEstimate,
 ) -> dict:
-    """
-    Normalizes imperfect LLM JSON into the required
-    ArchitectureRecommendation schema.
-    """
-
     def as_string(value, fallback: str) -> str:
         if isinstance(value, str) and value.strip():
             return value
@@ -46,14 +43,8 @@ def normalize_architecture_data(
             data.get("executive_summary"),
             "Architecture recommendation generated from structured request and retrieved knowledge.",
         ),
-        "pattern_reasoning": as_string(
-            data.get("pattern_reasoning"),
-            pattern.reason,
-        ),
-        "connector_reasoning": as_string(
-            data.get("connector_reasoning"),
-            connectors.notes,
-        ),
+        "pattern_reasoning": as_string(data.get("pattern_reasoning"), pattern.reason),
+        "connector_reasoning": as_string(data.get("connector_reasoning"), connectors.notes),
         "boomi_process_flow": as_string(
             data.get("boomi_process_flow"),
             "Start Shape -> Source Connector -> Data Validation -> Map Shape -> Target Connector -> Process Reporting",
@@ -68,28 +59,22 @@ def normalize_architecture_data(
         ),
         "retry_strategy": as_string(
             data.get("retry_strategy"),
-            "Retry transient failures only. Do not retry validation errors.",
+            "Retry transient technical failures only. Do not retry validation errors.",
         ),
         "monitoring_strategy": as_string(
             data.get("monitoring_strategy"),
-            "Use Boomi process reporting and alerts.",
+            "Use Boomi process reporting, alerts, execution logs, and business identifiers.",
         ),
         "security_strategy": as_string(
             data.get("security_strategy"),
-            "Use secure credentials and least-privilege access.",
+            "Use secure credentials, secure transport, and least-privilege access.",
         ),
         "scalability_considerations": as_string(
             data.get("scalability_considerations"),
-            "Use batching and pagination where required.",
+            "Use batching, pagination, and monitoring where required.",
         ),
-        "risks": as_list(
-            data.get("risks"),
-            ["Manual architecture review is required."],
-        ),
-        "assumptions": as_list(
-            data.get("assumptions"),
-            estimate.assumptions,
-        ),
+        "risks": as_list(data.get("risks"), ["Manual architecture review is required."]),
+        "assumptions": as_list(data.get("assumptions"), estimate.assumptions),
         "implementation_roadmap": as_list(
             data.get("implementation_roadmap"),
             [
@@ -97,6 +82,7 @@ def normalize_architecture_data(
                 "Configure connectors.",
                 "Build process flow.",
                 "Implement mapping.",
+                "Implement error handling.",
                 "Test and validate.",
             ],
         ),
@@ -104,6 +90,39 @@ def normalize_architecture_data(
             data.get("final_recommendation"),
             "Proceed after architecture review.",
         ),
+    }
+
+
+def build_fallback_data(
+    pattern: PatternRecommendation,
+    connectors: ConnectorRecommendation,
+    estimate: DevelopmentEstimate,
+) -> dict:
+    return {
+        "executive_summary": "The architecture recommendation could not be parsed from the AI response.",
+        "pattern_reasoning": pattern.reason,
+        "connector_reasoning": connectors.notes,
+        "boomi_process_flow": "Use source connector, validation, mapping, target connector, and process reporting.",
+        "mapping_strategy": "Use Boomi Map shape and validate mandatory fields before target submission.",
+        "error_handling_strategy": "Use Try/Catch and route failed records to an error path.",
+        "retry_strategy": "Retry transient technical failures only. Do not retry validation errors.",
+        "monitoring_strategy": "Use Boomi process reporting, alerts, execution logs, and business identifiers.",
+        "security_strategy": "Use secure credentials, secure transport, and least-privilege access.",
+        "scalability_considerations": "Use batching, pagination, and monitoring where required.",
+        "risks": [
+            "AI response was not valid JSON.",
+            "Manual review is required.",
+        ],
+        "assumptions": estimate.assumptions,
+        "implementation_roadmap": [
+            "Confirm requirements.",
+            "Configure connectors.",
+            "Build process flow.",
+            "Implement mapping.",
+            "Implement error handling.",
+            "Test and validate.",
+        ],
+        "final_recommendation": "Proceed after manual architecture review.",
     }
 
 
@@ -115,26 +134,24 @@ def generate_architecture_recommendation(
     knowledge_context: str,
     revision_request: RevisionRequest | None = None,
 ) -> ArchitectureRecommendation:
-    """
-    Generates structured architecture reasoning.
-
-    The LLM returns JSON.
-    This function converts that JSON into ArchitectureRecommendation.
-    """
-
     prompt = f"""
 You are a Senior Boomi Solution Architect.
 
-Generate a structured architecture recommendation.
+Generate a structured Boomi architecture recommendation.
 
 Use ONLY:
 - the integration request
 - deterministic tool outputs
 - retrieved knowledge
 
-Return ONLY valid JSON.
-Do not include markdown.
-Do not include explanation outside JSON.
+Important rules:
+- Return ONLY valid JSON.
+- Do not include markdown.
+- Do not include explanation outside JSON.
+- Do not invent unsupported connector capabilities.
+- Retry only transient technical failures.
+- Do NOT retry validation errors, authentication errors, or business rule failures.
+- Use Boomi terminology.
 
 Integration Request:
 Source System: {request.source_system}
@@ -155,6 +172,7 @@ Complexity: {estimate.complexity}
 Development Estimate: {estimate.development_estimate}
 Testing Estimate: {estimate.testing_estimate}
 Total Estimate: {estimate.total_estimate}
+Assumptions: {estimate.assumptions}
 
 Retrieved Knowledge:
 {knowledge_context}
@@ -177,6 +195,7 @@ Required JSON schema:
   "final_recommendation": "string"
 }}
 """
+
     if revision_request:
         prompt += f"""
 
@@ -199,36 +218,17 @@ Keep the output as valid JSON only.
 Do not include markdown.
 Do not include explanation outside JSON.
 """
+
     response = llm.invoke(prompt)
 
     try:
         data = json.loads(response.content)
     except json.JSONDecodeError:
-        data = {
-            "executive_summary": "The architecture recommendation could not be parsed from the AI response.",
-            "pattern_reasoning": pattern.reason,
-            "connector_reasoning": connectors.notes,
-            "boomi_process_flow": "Use source connector, validation, mapping, target connector, and process reporting.",
-            "mapping_strategy": "Use Boomi Map shape and validate mandatory fields before target submission.",
-            "error_handling_strategy": "Use Try/Catch and route failed records to an error path.",
-            "retry_strategy": "Retry transient failures only. Do not retry validation errors.",
-            "monitoring_strategy": "Use Boomi process reporting and alerts.",
-            "security_strategy": "Use secure credentials and least-privilege access.",
-            "scalability_considerations": "Use batching and pagination where required.",
-            "risks": [
-                "AI response was not valid JSON.",
-                "Manual review is required.",
-            ],
-            "assumptions": estimate.assumptions,
-            "implementation_roadmap": [
-                "Confirm requirements.",
-                "Configure connectors.",
-                "Build process flow.",
-                "Implement mapping.",
-                "Test and validate.",
-            ],
-            "final_recommendation": "Proceed after manual architecture review.",
-        }
+        data = build_fallback_data(
+            pattern=pattern,
+            connectors=connectors,
+            estimate=estimate,
+        )
 
     normalized_data = normalize_architecture_data(
         data=data,

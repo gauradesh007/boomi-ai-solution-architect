@@ -28,6 +28,13 @@ def generate_architecture_markdown_report(
         )
     )
 
+    knowledge_sources = "\n".join(
+        f"- {format_knowledge_source(source)}" for source in result.knowledge_sources
+    )
+
+    if not knowledge_sources:
+        knowledge_sources = "- No knowledge sources recorded."
+
     return f"""
 # Boomi Integration Architecture Report
 
@@ -108,7 +115,21 @@ Business Requirement:
 
 {roadmap}
 
-## 16. Final Recommendation
+## 16. Knowledge Sources Used
+
+{knowledge_sources}
+
+## 17. Final Recommendation
 
 {recommendation.final_recommendation}
 """.strip()
+
+
+def format_knowledge_source(
+    source: str,
+) -> str:
+    """
+    Converts a knowledge file path into a readable source name.
+    """
+
+    return source.split("/")[-1].replace(".md", "").replace("_", " ").title()

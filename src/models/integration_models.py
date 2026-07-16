@@ -1,14 +1,13 @@
 from typing import Literal
-from typing import Optional
+
 from pydantic import BaseModel
-from src.models.architecture_recommendation import ArchitectureRecommendation
-from src.models.review_result import ReviewResult
+from pydantic import Field
+
 from src.models.approval_result import ApprovalResult
+from src.models.architecture_recommendation import ArchitectureRecommendation
+from src.models.architecture_version import ArchitectureVersion
+from src.models.review_result import ReviewResult
 from src.models.workflow_status import WorkflowStatus
-from src.models.architecture_version import (
-    ArchitectureVersion,
-)
-from pydantic import BaseModel, Field
 
 IntegrationStyle = Literal[
     "API / Real-Time",
@@ -58,12 +57,12 @@ class IntegrationRequest(BaseModel):
     expected_volume: str
     business_requirement: str
 
-    authentication_type: Optional[str] = None
-    runtime_environment: Optional[str] = None
-    number_of_objects: Optional[int] = None
-    mapping_complexity: Optional[ComplexityLevel] = None
-    transformation_complexity: Optional[ComplexityLevel] = None
-    additional_constraints: Optional[str] = None
+    authentication_type: str | None = None
+    runtime_environment: str | None = None
+    number_of_objects: int | None = None
+    mapping_complexity: ComplexityLevel | None = None
+    transformation_complexity: ComplexityLevel | None = None
+    additional_constraints: str | None = None
 
 
 class PatternRecommendation(BaseModel):
@@ -100,6 +99,10 @@ class DevelopmentEstimate(BaseModel):
 class ArchitectureReport(BaseModel):
     """
     Final architecture report content.
+
+    Note:
+    This model is retained for future structured report output.
+    Current Markdown generation uses ArchitectureRecommendation.
     """
 
     executive_summary: str
@@ -146,6 +149,7 @@ class ArchitectureResult(BaseModel):
     retrieval_query: str
     knowledge_packets: list[KnowledgePacket]
     knowledge_context: str
+    knowledge_sources: list[str] = Field(default_factory=list)
     architecture_recommendation: ArchitectureRecommendation | None = None
     architecture_review: ReviewResult | None = None
     human_approval: ApprovalResult | None = None

@@ -13,83 +13,16 @@ def display_architecture_result(
         display_developer_result(result)
 
 
-def display_workflow_status(
-    result: ArchitectureResult,
-) -> None:
-    if not result.workflow_status:
-        return
-
-    st.subheader("Workflow Status")
-
-    st.info(f"Current Status: {result.workflow_status.current_status}")
-
-    with st.expander("Workflow History"):
-        for item in result.workflow_status.status_history:
-            st.write(f"✅ {item}")
-
-
 def display_production_result(
     result: ArchitectureResult,
 ) -> None:
-
     display_workflow_status(result)
 
     st.success("Architecture recommendation successfully generated and reviewed.")
 
-    # Architecture Summary
-    # Review Dashboard
-
+    display_architecture_summary(result)
+    display_review_dashboard(result)
     display_architecture_versions(result)
-
-    # Architecture Report
-
-    st.subheader("Architecture Summary")
-
-    col1, col2, col3, col4 = st.columns(4)
-
-    with col1:
-        st.metric("Source", result.request.source_system)
-
-    with col2:
-        st.metric("Target", result.request.target_system)
-
-    with col3:
-        st.metric("Pattern", result.pattern.pattern_name)
-
-    with col4:
-        st.metric("Complexity", result.estimate.complexity)
-
-    st.divider()
-
-    if result.architecture_review:
-        st.subheader("Review Dashboard")
-
-        col1, col2, col3 = st.columns(3)
-
-        with col1:
-            st.metric(
-                "Review Score",
-                f"{result.architecture_review.score}/100",
-            )
-
-        with col2:
-            st.metric(
-                "Status",
-                result.architecture_review.status,
-            )
-
-        with col3:
-            st.metric(
-                "Revisions",
-                result.revision_count,
-            )
-
-        if result.architecture_review.feedback:
-            with st.expander("Review Feedback"):
-                for item in result.architecture_review.feedback:
-                    st.warning(item)
-
-    st.divider()
 
     if result.architecture_report:
         st.subheader("Architecture Report")
@@ -101,7 +34,8 @@ def display_production_result(
             file_name="boomi_architecture_report.md",
             mime="text/markdown",
         )
-    st.divider()
+
+    display_knowledge_sources(result)
     display_human_approval(result)
 
 
@@ -109,26 +43,12 @@ def display_developer_result(
     result: ArchitectureResult,
 ) -> None:
     display_workflow_status(result)
-    display_architecture_versions(result)
+
     st.success("Developer view generated successfully.")
 
-    st.subheader("Architecture Summary")
-
-    col1, col2, col3, col4 = st.columns(4)
-
-    with col1:
-        st.metric("Source", result.request.source_system)
-
-    with col2:
-        st.metric("Target", result.request.target_system)
-
-    with col3:
-        st.metric("Pattern", result.pattern.pattern_name)
-
-    with col4:
-        st.metric("Complexity", result.estimate.complexity)
-
-    st.divider()
+    display_architecture_summary(result)
+    display_review_dashboard(result)
+    display_architecture_versions(result)
 
     st.subheader("Integration Request")
     st.json(result.request.model_dump())
@@ -152,7 +72,6 @@ def display_developer_result(
     if result.architecture_review:
         st.subheader("Architecture Review")
         st.json(result.architecture_review.model_dump())
-        st.write(f"Revision Count: {result.revision_count}")
 
     with st.expander("Retrieved Knowledge Packets", expanded=False):
         for packet in result.knowledge_packets:
@@ -173,13 +92,126 @@ def display_developer_result(
             file_name="boomi_architecture_report.md",
             mime="text/markdown",
         )
-    st.divider()
+
+    display_knowledge_sources(result)
     display_human_approval(result)
+
+
+def display_workflow_status(
+    result: ArchitectureResult,
+) -> None:
+    if not result.workflow_status:
+        return
+
+    st.subheader("Workflow Status")
+    st.info(f"Current Status: {result.workflow_status.current_status}")
+
+    with st.expander("Workflow History"):
+        for item in result.workflow_status.status_history:
+            st.write(f"✅ {item}")
+
+
+def display_architecture_summary(
+    result: ArchitectureResult,
+) -> None:
+    st.subheader("Architecture Summary")
+
+    col1, col2, col3, col4 = st.columns(4)
+
+    with col1:
+        st.metric("Source", result.request.source_system)
+
+    with col2:
+        st.metric("Target", result.request.target_system)
+
+    with col3:
+        st.metric("Pattern", result.pattern.pattern_name)
+
+    with col4:
+        st.metric("Complexity", result.estimate.complexity)
+
+    st.divider()
+
+
+def display_review_dashboard(
+    result: ArchitectureResult,
+) -> None:
+    if not result.architecture_review:
+        return
+
+    st.subheader("Review Dashboard")
+
+    col1, col2, col3 = st.columns(3)
+
+    with col1:
+        st.metric(
+            "Review Score",
+            f"{result.architecture_review.score}/100",
+        )
+
+    with col2:
+        st.metric(
+            "Status",
+            result.architecture_review.status,
+        )
+
+    with col3:
+        st.metric(
+            "Revisions",
+            result.revision_count,
+        )
+
+    if result.architecture_review.feedback:
+        with st.expander("Review Feedback"):
+            for item in result.architecture_review.feedback:
+                st.warning(item)
+
+    st.divider()
+
+
+def display_architecture_versions(
+    result: ArchitectureResult,
+) -> None:
+    if not result.versions:
+        return
+
+    st.subheader("Architecture Versions")
+
+    for version in result.versions:
+        with st.expander(
+            f"Version {version.version} - Score {version.review.score}/100"
+        ):
+            st.write(f"Created At: {version.created_at}")
+            st.write(f"Review Status: {version.review.status}")
+            st.json(version.recommendation.model_dump())
+
+    st.divider()
+
+
+def display_knowledge_sources(
+    result: ArchitectureResult,
+) -> None:
+    if not result.knowledge_sources:
+        return
+
+    st.subheader("Knowledge Sources Used")
+
+    with st.expander(
+        "View Knowledge Sources",
+        expanded=False,
+    ):
+        for source in result.knowledge_sources:
+            display_name = (
+                source.split("/")[-1].replace(".md", "").replace("_", " ").title()
+            )
+
+            st.markdown(f"📄 **{display_name}**")
 
 
 def display_human_approval(
     result: ArchitectureResult,
 ) -> None:
+    st.divider()
     st.subheader("Human Approval")
 
     decision = st.radio(
@@ -221,18 +253,3 @@ def display_human_approval(
         if saved["comments"]:
             st.write("Comments:")
             st.write(saved["comments"])
-
-
-def display_architecture_versions(result: ArchitectureResult) -> None:
-    if not result.versions:
-        return
-
-    st.subheader("Architecture Versions")
-
-    for version in result.versions:
-        with st.expander(
-            f"Version {version.version} - Score {version.review.score}/100"
-        ):
-            st.write(f"Created At: {version.created_at}")
-            st.write(f"Review Status: {version.review.status}")
-            st.json(version.recommendation.model_dump())
