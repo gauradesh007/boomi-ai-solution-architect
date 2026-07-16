@@ -10,10 +10,11 @@ st.set_page_config(
     layout="wide",
 )
 
-
 with st.sidebar:
     st.title("🧩 Boomi AI")
     st.caption("Enterprise Integration Solution Architect")
+
+    st.divider()
 
     mode = st.radio(
         "Application Mode",
@@ -25,52 +26,106 @@ with st.sidebar:
 
     st.divider()
 
-    st.markdown("### Capabilities")
+    st.markdown("## 🧠 Capabilities")
+
     st.markdown("""
-        ✅ Pattern recommendation  
-        ✅ Connector recommendation  
-        ✅ Knowledge retrieval  
-        ✅ AI reasoning  
-        ✅ Architecture review  
-        ✅ Revision workflow  
-        ✅ Markdown report  
-        ✅ Source attribution        
-        """)
+✅ AI Architecture Recommendation
+
+✅ Enterprise Knowledge Retrieval
+
+✅ Deterministic Engineering Rules
+
+✅ Architecture Review
+
+✅ Revision Workflow
+
+✅ Human Approval
+
+✅ Conversation Memory
+
+✅ Version Management
+
+✅ Markdown Report
+""")
 
     st.divider()
 
-    st.markdown("### Roadmap")
+    st.markdown("## 🚀 Product Status")
+
     st.markdown("""
-        🚧 Human approval  
-        🚧 PDF export  
-        🚧 Architecture diagrams  
-        """)
+🟢 **Current Release**
+
+Version **v1.0.0**
+
+Status **Release Candidate**
+""")
 
     st.divider()
 
-    st.success("Prototype Active")
-    reuse_last_request = False
+    st.markdown("## 📅 Roadmap")
+
+    st.markdown("""
+### Version 1.1
+
+⬜ PDF Export
+
+⬜ DOCX Export
+
+⬜ Architecture Diagram Generation
+
+### Version 2.0
+
+⬜ Multi-Platform Support
+
+⬜ OpenAI Provider
+
+⬜ Enterprise Knowledge Connectors
+
+⬜ Architecture Comparison
+""")
 
     if "last_request" in st.session_state:
+
         st.divider()
-        st.markdown("### Last Request")
+
+        st.markdown("## 📌 Recent Request")
+
         last_request = st.session_state["last_request"]
 
-        st.write(f"Source: {last_request['source_system']}")
-        st.write(f"Target: {last_request['target_system']}")
-        st.write(f"Style: {last_request['integration_style']}")
-        st.write(f"Operation: {last_request['operation_type']}")
+        st.markdown(f"""
+**Source**
+
+{last_request["source_system"]}
+
+**Target**
+
+{last_request["target_system"]}
+
+**Integration**
+
+{last_request["integration_style"]}
+
+**Operation**
+
+{last_request["operation_type"]}
+""")
 
         reuse_last_request = st.checkbox(
-            "Reuse last request",
+            "Reuse this request",
             value=False,
         )
+    else:
+        reuse_last_request = False
+
+    st.divider()
+
+    st.caption("© 2026 Boomi AI Solution Architect")
 
 st.title("Boomi AI Solution Architect")
+st.caption("AI-powered enterprise integration architecture assistant")
 
 st.markdown("""
-    AI-powered enterprise integration architecture assistant for generating
-    Boomi-oriented solution recommendations from structured requirements,
+    Generate Boomi-oriented solution recommendations from structured requirements,
     deterministic tools, enterprise knowledge, and AI reasoning.
     """)
 
@@ -78,7 +133,6 @@ st.info(
     "Enter an integration requirement below and generate an architecture "
     "recommendation with review score, revision feedback, and a Markdown report."
 )
-
 
 default_values = st.session_state.get("last_request") if reuse_last_request else None
 

@@ -1,30 +1,36 @@
 # 🧩 Boomi AI Solution Architect
 
-> **An AI-powered Enterprise Integration Architecture Assistant** that combines deterministic engineering, Retrieval-Augmented Generation (RAG), Agentic AI, and human governance to generate implementation-ready integration architectures.
+> **An AI-powered Enterprise Integration Architecture Assistant** that combines deterministic engineering, Retrieval-Augmented Generation (RAG), Agentic AI, and human governance to generate implementation-ready Boomi integration architectures.
+
+![Version](https://img.shields.io/badge/version-v1.0.0-blue)
+![Python](https://img.shields.io/badge/python-3.12+-green)
+![Streamlit](https://img.shields.io/badge/UI-Streamlit-red)
+![License](https://img.shields.io/badge/license-MIT-lightgrey)
+![Status](https://img.shields.io/badge/status-Release%20Candidate-success)
 
 ---
 
-# 🚀 Vision
+# 🚀 Project Vision
 
-Boomi AI Solution Architect is a production-oriented AI platform designed to assist Integration Architects and Developers in designing enterprise integration solutions.
+Boomi AI Solution Architect helps Solution Architects and Integration Developers rapidly design enterprise integration solutions.
 
-Unlike a generic AI chatbot, the application combines:
+Instead of relying on open-ended prompts, the application combines:
 
 - Structured requirement gathering
 - Deterministic engineering rules
 - Enterprise knowledge retrieval (RAG)
-- AI-powered architecture reasoning
+- AI architecture reasoning
 - Architecture review & revision
 - Human governance
 - Professional architecture report generation
 
-The initial implementation focuses on **Boomi**, while the architecture is intentionally designed to support multiple enterprise integration platforms in the future.
+The first implementation targets **Boomi**, while the architecture is intentionally designed to support multiple enterprise integration platforms.
 
 ---
 
 # 🎯 Business Problem
 
-Enterprise integration solution design is often:
+Enterprise integration architecture is often:
 
 - Manual
 - Time-consuming
@@ -40,7 +46,7 @@ Architects repeatedly spend time:
 - Estimating development effort
 - Producing architecture documentation
 
-Boomi AI Solution Architect aims to standardize and accelerate this process while keeping architects in control.
+Boomi AI Solution Architect standardizes and accelerates this process while keeping architects in control.
 
 ---
 
@@ -62,21 +68,14 @@ Capture:
 
 ---
 
-## ⚙ Deterministic Engineering Tools
+## ⚙ Deterministic Engineering Layer
 
-Current tools include:
+Implemented:
 
-- Pattern Recommendation
+- Integration Pattern Recommendation
 - Connector Recommendation
 - Complexity Estimation
 - Development & Testing Estimation
-
-Future tools:
-
-- Risk Assessment
-- Monitoring Advisor
-- Security Advisor
-- API Strategy Advisor
 
 ---
 
@@ -84,81 +83,55 @@ Future tools:
 
 Current implementation:
 
-- Curated Markdown Knowledge
+- Curated Markdown Knowledge Base
 - Persistent ChromaDB
 - Knowledge Router
 - Knowledge Retriever
 - Knowledge Deduplicator
 - Knowledge Ranker
 - Context Optimizer
-
-Future knowledge sources:
-
-- Official Boomi Documentation
-- Internal Standards
-- SharePoint
-- Confluence
-- PDFs
+- Context Builder
 
 ---
 
 ## 🤖 AI Architecture Intelligence
 
-Current AI capabilities:
+Implemented:
 
 - Architecture Recommendation
 - Architecture Review
 - Improvement / Revision Workflow
-
-Planned:
-
-- Multi-agent reasoning
-- Architecture scoring
-- Human approval
-- Architecture history
+- Human Approval
+- Conversation Memory
+- Architecture Version Management
 
 ---
 
 # 🏗 High-Level Architecture
 
 ```text
-                 Streamlit UI
-                       │
-                       ▼
+                Streamlit UI
+                      │
+                      ▼
              ArchitectureService
-                       │
+                      │
       ┌────────────────┼────────────────┐
       ▼                ▼                ▼
  Tool Layer    Knowledge Layer    AI Layer
-                       │
-                       ▼
+                      │
+                      ▼
             Architecture Workflow
-                       │
-                       ▼
-            Architecture Report
+                      │
+                      ▼
+             Architecture Report
 ```
 
 ---
 
-# 🔄 Current Workflow
+# 🔄 Enterprise Knowledge Pipeline
 
 ```text
-User
-        │
-        ▼
-Streamlit Form
-        │
-        ▼
-ArchitectureService
-        │
-        ▼
-Pattern Recommendation
-        │
-        ▼
-Connector Recommendation
-        │
-        ▼
-Complexity Estimation
+Integration Request
         │
         ▼
 Knowledge Router
@@ -180,6 +153,35 @@ Knowledge Context Builder
         │
         ▼
 Architecture Agent
+```
+
+---
+
+# 🔄 Application Workflow
+
+```text
+User
+        │
+        ▼
+Streamlit Form
+        │
+        ▼
+ArchitectureService
+        │
+        ▼
+Pattern Recommendation
+        │
+        ▼
+Connector Recommendation
+        │
+        ▼
+Complexity Estimation
+        │
+        ▼
+Knowledge Pipeline
+        │
+        ▼
+Architecture Agent
         │
         ▼
 Architecture Review Agent
@@ -194,69 +196,8 @@ Architecture Recommendation
 Markdown Report Generator
         │
         ▼
-Architecture Report
+Human Approval
 ```
-
----
-
-# 🧠 Layered Architecture
-
-## Presentation Layer
-
-- Streamlit UI
-- Developer Mode
-- Production Mode
-
----
-
-## Application Layer
-
-- ArchitectureService
-
-Responsibilities:
-
-- Orchestrate the complete workflow
-- Hide implementation complexity
-- Return ArchitectureResult
-
----
-
-## Tool Layer
-
-Deterministic engineering:
-
-- Pattern Tool
-- Connector Tool
-- Complexity Estimator
-- Development Estimator
-
----
-
-## Knowledge Layer
-
-- Markdown Knowledge
-- ChromaDB
-- Router
-- Retriever
-- Deduplicator
-- Ranker
-- Context Optimizer
-
----
-
-## AI Layer
-
-- Architecture Agent
-- Review Agent
-- Improvement Agent
-
----
-
-## Report Layer
-
-- Markdown
-- PDF (planned)
-- Word (planned)
 
 ---
 
@@ -279,14 +220,14 @@ boomi-ai-solution-architect/
 │   └── utils/
 │
 ├── knowledge/
-│   ├── patterns/
-│   ├── connectors/
-│   ├── monitoring/
-│   ├── security/
-│   ├── error_handling/
-│   └── estimation/
 │
 ├── docs/
+│   ├── architecture/
+│   ├── roadmap/
+│   ├── screenshots/
+│   ├── srs/
+│   └── user-guide/
+│
 ├── diagrams/
 ├── sample_outputs/
 ├── tests/
@@ -315,53 +256,114 @@ Future
 
 ---
 
+# 📷 Screenshots
+
+docs/
+└── screenshots/
+    ├── 01-production-mode_home-page.png
+    ├── 02-production-mode_architecture-summary.png
+    ├── 03-production-mode_architecture-report-1.png
+    └── 04-production-mode_architecture-report-2.png
+
+---
+
+# 🚀 Getting Started
+
+## Prerequisites
+
+- Python 3.12+
+- Git
+- Ollama
+- Llama 3.2 1B model
+
+## Clone Repository
+
+```bash
+git clone https://github.com/gauradesh007/boomi-ai-solution-architect.git
+
+cd boomi-ai-solution-architect
+```
+
+## Create Virtual Environment
+
+```bash
+python3 -m venv venv
+
+source venv/bin/activate
+```
+
+## Install Dependencies
+
+```bash
+pip install -r requirements.txt
+```
+
+## Install Ollama
+
+Follow:
+
+https://ollama.com/download
+
+Pull model:
+
+```bash
+ollama pull llama3.2:1b
+```
+
+## Build ChromaDB
+
+```bash
+python -m src.retrieval.ingest_knowledge
+```
+
+## Run Application
+
+```bash
+streamlit run app.py
+```
+
+---
+
 # 📈 Development Progress
 
 | Sprint | Status |
 |---------|:------:|
 | Sprint 1 – Foundation | ✅ |
-| Sprint 2 – Knowledge & Application Layer | ✅ |
+| Sprint 2 – Knowledge Layer | ✅ |
 | Sprint 3 – Architecture Intelligence | ✅ |
 | Sprint 4 – Enterprise Retrieval Pipeline | ✅ |
-| Sprint 5 – Enterprise Workflow | 🚧 |
-| Sprint 6 – Export & Documentation | ⏳ |
+| Sprint 5 – Enterprise Workflow | ✅ |
+| Sprint 6 – Deployment | 🚧 |
 
 ---
 
-# 📷 Screenshots
-
-## Streamlit Application
-
-> *(Add screenshots here as the application evolves.)*
-
----
-
-# 📖 Documentation
+# 📚 Documentation
 
 Available documentation:
 
-- Software Design & Architecture Specification (SRS)
-- Architecture Diagrams
+- Software Requirements Specification (SRS)
+- User Guide
+- Developer Guide
 - CHANGELOG
-- Roadmap
+- Architecture Diagrams
 
 ---
 
-# 🎯 Long-Term Vision
+# 🛣 Roadmap
 
-Boomi AI Solution Architect is designed as the first implementation of a broader platform:
+## Version 1.1
 
-**Enterprise Integration AI Solution Architect**
+- PDF Export
+- DOCX Export
+- Architecture Diagram Generation
 
-Future platform support:
+## Version 2.0
 
-- Boomi
-- MuleSoft
-- Azure Integration Services
-- Informatica
-- SnapLogic
-
-without changing the core application architecture.
+- OpenAI Provider
+- Multi-platform Support
+- Enterprise Knowledge Connectors
+- Architecture Comparison
+- Azure OpenAI Support
 
 ---
 
@@ -369,20 +371,30 @@ without changing the core application architecture.
 
 The application follows several core architectural principles:
 
-- ✅ UI contains no business logic
-- ✅ ApplicationService orchestrates the application
-- ✅ Tool Layer provides deterministic engineering decisions
-- ✅ Knowledge Layer is the trusted source
-- ✅ AI performs reasoning only
-- ✅ Report Generator owns formatting
-- ✅ Human approval remains the final governance layer
+- UI contains no business logic
+- ApplicationService orchestrates the workflow
+- Tool Layer provides deterministic engineering decisions
+- Knowledge Layer is the trusted source
+- AI performs reasoning, not formatting
+- Report Generator owns presentation
+- Human approval is the final governance layer
 
 ---
 
-# 🌟 Project Status
+# 📄 License
 
-The project is currently under active development and is evolving toward a production-ready enterprise AI platform for integration architecture.
+This project is released under the MIT License.
 
-Current maturity:
+---
 
-**≈ 65% of the planned v1.0 functionality has been implemented.**
+# 👨‍💻 Author
+
+**Adesh Gaur**
+
+Enterprise Integration Architect
+
+Boomi | Healthcare Integration | Agentic AI | RAG | Enterprise Architecture
+
+---
+
+## ⭐ If you find this project useful, please consider giving it a star on GitHub.
